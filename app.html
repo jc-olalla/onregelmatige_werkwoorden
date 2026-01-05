@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Dutch Irregular Verbs Trainer</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --card:#111824;
+      --muted:#9fb0c3;
+      --text:#e9f1fb;
+      --accent:#6ee7ff;
+      --border:rgba(255,255,255,.10);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+      --tap:56px;
+      --pad:16px;
+      --max:720px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    @media (prefers-color-scheme: light) {
+      :root{
+        --bg:#f6f8fb;
+        --card:#ffffff;
+        --muted:#4a5b70;
+        --text:#0b1624;
+        --border:rgba(15,23,42,.12);
+        --shadow:0 10px 26px rgba(15,23,42,.10);
+      }
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background:linear-gradient(180deg, rgba(110,231,255,.10), transparent 30%), var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    }
+
+    .wrap{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:14px var(--pad) 86px;
+    }
+
+    header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin:10px 0 12px;
+    }
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    h1{
+      font-size:18px;
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .sub{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      box-shadow:var(--shadow);
+      user-select:none;
+      touch-action:manipulation;
+      height:44px;
+    }
+    .pill button{
+      all:unset;
+      cursor:pointer;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .pill button.active{
+      background:rgba(110,231,255,.18);
+      color:var(--text);
+      border:1px solid rgba(110,231,255,.35);
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+      margin:12px 0;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+
+    .big{
+      font-size:30px;
+      font-weight:750;
+      letter-spacing:.2px;
+      margin:2px 0 4px;
+    }
+    .en{
+      font-size:14px;
+      color:var(--muted);
+      margin:0 0 8px;
+    }
+
+    .forms{
+      margin-top:10px;
+      border-top:1px solid var(--border);
+      padding-top:10px;
+      display:grid;
+      gap:8px;
+    }
+    .kv{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:rgba(255,255,255,.03);
+    }
+    .k{
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .v{
+      font-family:var(--mono);
+      font-size:14px;
+      text-align:right;
+      word-break:break-word;
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .btn{
+      height:var(--tap);
+      border-radius:16px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      font-weight:650;
+      font-size:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      cursor:pointer;
+      touch-action:manipulation;
+      user-select:none;
+    }
+    .btn:active{ transform:translateY(1px); }
+    .btn.primary{
+      border-color:rgba(110,231,255,.40);
+      background:rgba(110,231,255,.16);
+    }
+    .btn.good{
+      border-color:rgba(52,211,153,.40);
+      background:rgba(52,211,153,.14);
+    }
+    .btn.danger{
+      border-color:rgba(255,107,107,.45);
+      background:rgba(255,107,107,.14);
+    }
+
+    .meta{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+    }
+    .toggle{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      user-select:none;
+      touch-action:manipulation;
+    }
+    .toggle input{ width:18px; height:18px; }
+
+    nav{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+      background:rgba(10,14,20,.72);
+      backdrop-filter: blur(12px);
+      border-top:1px solid var(--border);
+    }
+    @media (prefers-color-scheme: light){
+      nav{ background:rgba(255,255,255,.78); }
+    }
+    .tabs{
+      max-width:var(--max);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+    }
+    .tab{
+      height:54px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      font-weight:750;
+      font-size:13px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      touch-action:manipulation;
+    }
+    .tab.active{
+      color:var(--text);
+      border-color:rgba(110,231,255,.45);
+      background:rgba(110,231,255,.18);
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    label{
+      font-size:12px;
+      color:var(--muted);
+    }
+    input[type="text"]{
+      height:54px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      padding:0 14px;
+      font-size:16px;
+      outline:none;
+    }
+    input[type="text"]:focus{
+      border-color:rgba(110,231,255,.55);
+      box-shadow:0 0 0 3px rgba(110,231,255,.15);
+    }
+    .feedback{
+      margin-top:10px;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      font-size:13px;
+      line-height:1.45;
+      white-space:pre-wrap;
+    }
+    .feedback.ok{
+      border-color:rgba(52,211,153,.45);
+      background:rgba(52,211,153,.12);
+    }
+    .feedback.no{
+      border-color:rgba(255,107,107,.45);
+      background:rgba(255,107,107,.12);
+    }
+    .small{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:6px;
+    }
+
+    .searchbar{
+      display:flex;
+      gap:10px;
+      margin-top:8px;
+    }
+    .searchbar input{ flex:1; }
+    .list{
+      margin-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    details{
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+      overflow:hidden;
+    }
+    summary{
+      list-style:none;
+      padding:14px 14px;
+      cursor:pointer;
+      user-select:none;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    summary::-webkit-details-marker{ display:none; }
+    .sumleft{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+    }
+    .sumtitle{
+      font-weight:800;
+      font-size:16px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .sumsub{
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .caret{
+      color:var(--muted);
+      font-weight:900;
+      font-size:18px;
+    }
+    .detailBody{
+      padding:0 14px 14px;
+    }
+
+    .hidden{ display:none !important; }
+
+    .loader{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      font-size:13px;
+      color:var(--muted);
+      padding:18px;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:99px;background:rgba(110,231,255,.55);
+      animation: b 1s infinite ease-in-out;
+    }
+    .dot:nth-child(2){ animation-delay:.15s; opacity:.8; }
+    .dot:nth-child(3){ animation-delay:.30s; opacity:.6; }
+    @keyframes b { 0%,100%{ transform:translateY(0)} 50%{ transform:translateY(-6px)} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Dutch Irregular Verbs Trainer</h1>
+        <div class="sub">Reads from <span style="font-family:var(--mono)">verbs.csv</span> • Study: order/random • Quiz: fill in imperfectum + perfectum + English • Full list</div>
+      </div>
+
+      <div class="pill" role="group" aria-label="Study order mode">
+        <button id="modeOrder" class="active" type="button">In order</button>
+        <button id="modeRandom" type="button">Random</button>
+      </div>
+    </header>
+
+    <section id="loadingCard" class="card">
+      <div class="loader">
+        <span>Loading verbs…</span>
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <div class="small" id="loadHint"></div>
+    </section>
+
+    <!-- STUDY -->
+    <section id="viewStudy" class="card hidden">
+      <div class="row">
+        <div class="chip" id="progressChip">1 / 1</div>
+        <label class="toggle" title="Show the verb forms">
+          <input id="revealToggle" type="checkbox" />
+          <span>Reveal forms</span>
+        </label>
+      </div>
+
+      <div style="margin-top:10px;">
+        <div class="big" id="studyInf">—</div>
+        <p class="en" id="studyEn">—</p>
+      </div>
+
+      <div id="formsBox" class="forms hidden">
+        <div class="kv"><div class="k">imperfectum enkelvoud</div><div class="v" id="studyImpS">—</div></div>
+        <div class="kv"><div class="k">imperfectum meervoud</div><div class="v" id="studyImpP">—</div></div>
+        <div class="kv"><div class="k">perfectum</div><div class="v" id="studyPerf">—</div></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="prevBtn" type="button">← Previous</button>
+        <button class="btn primary" id="nextBtn" type="button">Next →</button>
+        <button class="btn" id="shuffleOneBtn" type="button">🎲 Random</button>
+        <button class="btn danger" id="resetRandomBtn" type="button">Reset random</button>
+      </div>
+
+      <div class="meta">
+        <span class="chip" id="randomMeta">Random: off</span>
+        <label class="toggle" title="Random mode without repeats until all are seen">
+          <input id="noRepeatToggle" type="checkbox" checked />
+          <span>No repeats</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="viewQuiz" class="card hidden">
+      <div class="row">
+        <div class="chip" id="quizProgress">Quiz • 1 / 1</div>
+        <div class="chip" id="scoreChip">Score: 0✅ / 0❌</div>
+      </div>
+
+      <div style="margin-top:10px;">
+        <div class="big" id="quizInf">—</div>
+        <p class="en" id="quizPrompt">Fill in: imperfectum (both), perfectum, and English</p>
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label for="inImpS">imperfectum enkelvoud</label>
+          <input id="inImpS" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" />
+        </div>
+        <div class="field">
+          <label for="inImpP">imperfectum meervoud</label>
+          <input id="inImpP" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" />
+        </div>
+        <div class="field">
+          <label for="inPerf">perfectum</label>
+          <input id="inPerf" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" />
+          <div class="small">You may type with or without parentheses: “gegaan” matches “gegaan (ben)”.</div>
+        </div>
+        <div class="field">
+          <label for="inEn">engels</label>
+          <input id="inEn" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" />
+          <div class="small">“to …” is optional: “bake” matches “to bake”.</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn good" id="checkBtn" type="button">✓ Check</button>
+        <button class="btn" id="showBtn" type="button">👀 Show answers</button>
+        <button class="btn primary" id="quizNextBtn" type="button">Next →</button>
+        <button class="btn danger" id="quizResetBtn" type="button">Reset score</button>
+      </div>
+
+      <div id="feedback" class="feedback hidden"></div>
+
+      <div class="meta">
+        <span class="chip" id="quizRandomMeta">Random: off</span>
+        <label class="toggle" title="Random mode without repeats until all are seen">
+          <input id="quizNoRepeatToggle" type="checkbox" checked />
+          <span>No repeats</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- LIST -->
+    <section id="viewList" class="card hidden">
+      <div class="row">
+        <div class="chip" id="listCount">0 verbs</div>
+        <button class="btn" id="expandAllBtn" type="button">Expand all</button>
+      </div>
+
+      <div class="searchbar">
+        <input id="searchInput" type="text" placeholder="Search (e.g. ‘schr’, ‘ben’, ‘to go’)…" autocomplete="off" />
+        <button class="btn" id="clearSearchBtn" type="button">Clear</button>
+      </div>
+
+      <div class="small">Tap a verb to expand. Search matches Dutch + English + forms.</div>
+
+      <div id="list" class="list"></div>
+    </section>
+  </div>
+
+  <nav>
+    <div class="tabs" role="tablist" aria-label="Views">
+      <div class="tab active" id="tabStudy" role="tab" aria-selected="true">Study</div>
+      <div class="tab" id="tabQuiz" role="tab" aria-selected="false">Quiz</div>
+      <div class="tab" id="tabList" role="tab" aria-selected="false">List</div>
+    </div>
+  </nav>
+
+  <script>
+    // =========================
+    // Configuration
+    // =========================
+    // Put verbs.csv in the same folder as index.html,
+    // OR change this to something like "./data/verbs.csv"
+    const CSV_PATH = "./verbs.csv";
+
+    // =========================
+    // Minimal CSV parser
+    // Assumes no commas inside fields (true for your dataset)
+    // Handles BOM + empty lines.
+    // =========================
+    function parseCSV(text) {
+      const lines = text
+        .replace(/^\uFEFF/, "") // strip BOM
+        .split(/\r?\n/)
+        .map(l => l.trim())
+        .filter(l => l.length);
+
+      if (!lines.length) return [];
+
+      const header = lines[0].split(",").map(h => h.trim());
+      const idx = (name) => header.indexOf(name);
+
+      const required = ["infinitief","imperfectum_enkelvoud","imperfectum_meervoud","perfectum","engels"];
+      for (const r of required) {
+        if (idx(r) === -1) {
+          throw new Error(`CSV missing column: ${r}`);
+        }
+      }
+
+      const rows = [];
+      for (let i=1; i<lines.length; i++){
+        const parts = lines[i].split(",").map(p => p.trim());
+        // If a line is shorter, pad it; if longer, join extra into last (very defensive)
+        while (parts.length < header.length) parts.push("");
+        if (parts.length > header.length) {
+          const fixed = parts.slice(0, header.length-1);
+          fixed.push(parts.slice(header.length-1).join(",").trim());
+          rows.push(fixed);
+        } else {
+          rows.push(parts);
+        }
+      }
+
+      return rows.map(parts => ({
+        inf: parts[idx("infinitief")] || "—",
+        impS: parts[idx("imperfectum_enkelvoud")] || "—",
+        impP: parts[idx("imperfectum_meervoud")] || "—",
+        perf: parts[idx("perfectum")] || "—",
+        en: parts[idx("engels")] || "—",
+      }));
+    }
+
+    // =========================
+    // Normalization + checking
+    // =========================
+    function norm(s){
+      return (s ?? "")
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+    }
+    function stripParen(s){
+      // remove anything like " (heb)" or " (het)" for forgiving matches
+      return s.replace(/\s*\([^)]*\)\s*/g, " ").replace(/\s+/g," ").trim();
+    }
+    function splitSlashOptions(s){
+      // allow "wilde/wou" or "ben/heb"
+      return s.split("/").map(x => x.trim()).filter(Boolean);
+    }
+    function acceptableAnswers(expected){
+      // returns a set of acceptable normalized answers for expected string
+      const out = new Set();
+      const e = (expected ?? "").trim();
+      if (!e) return out;
+
+      // If expected is "–" accept "-" and "–" and empty-ish
+      if (e === "–" || e === "-") {
+        out.add("–"); out.add("-"); out.add("");
+        return out;
+      }
+
+      // Base expected
+      out.add(norm(e));
+      out.add(norm(stripParen(e)));
+
+      // If contains slashes, accept each option, with and without parentheses
+      if (e.includes("/")){
+        for (const opt of splitSlashOptions(e)){
+          out.add(norm(opt));
+          out.add(norm(stripParen(opt)));
+        }
+      }
+
+      // If includes something like "speet (het)" accept "speet"
+      // (already covered by stripParen)
+
+      return out;
+    }
+
+    function checkField(user, expected, {english=false} = {}){
+      let u = norm(user);
+
+      if (english) {
+        // make "to ..." optional
+        u = u.replace(/^to\s+/,"").trim();
+      }
+      const expSet = acceptableAnswers(expected);
+      // for english, also compare expected without "to "
+      if (english) {
+        const eNorm = norm(expected).replace(/^to\s+/,"").trim();
+        expSet.add(eNorm);
+      }
+
+      return expSet.has(u);
+    }
+
+    // =========================
+    // App state
+    // =========================
+    let VERBS = [];
+    let idx = 0;
+
+    // random pools (no-repeat)
+    let randPool = [];
+    let quizIdx = 0;
+    let quizPool = [];
+    let scoreOK = 0, scoreNO = 0;
+
+    function rebuildPool(n){
+      return Array.from({length:n}, (_,i)=>i);
+    }
+    function pickFromPool(pool){
+      const j = Math.floor(Math.random() * pool.length);
+      return pool.splice(j,1)[0];
+    }
+
+    // =========================
+    // Elements
+    // =========================
+    const loadingCard = document.getElementById("loadingCard");
+    const loadHint = document.getElementById("loadHint");
+
+    // Tabs / views
+    const tabStudy = document.getElementById("tabStudy");
+    const tabQuiz = document.getElementById("tabQuiz");
+    const tabList = document.getElementById("tabList");
+    const viewStudy = document.getElementById("viewStudy");
+    const viewQuiz = document.getElementById("viewQuiz");
+    const viewList = document.getElementById("viewList");
+
+    // Study mode toggle
+    const modeOrder = document.getElementById("modeOrder");
+    const modeRandom = document.getElementById("modeRandom");
+    const noRepeatToggle = document.getElementById("noRepeatToggle");
+    const randomMeta = document.getElementById("randomMeta");
+
+    // Study UI
+    const progressChip = document.getElementById("progressChip");
+    const revealToggle = document.getElementById("revealToggle");
+    const formsBox = document.getElementById("formsBox");
+    const studyInf = document.getElementById("studyInf");
+    const studyEn = document.getElementById("studyEn");
+    const studyImpS = document.getElementById("studyImpS");
+    const studyImpP = document.getElementById("studyImpP");
+    const studyPerf = document.getElementById("studyPerf");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const shuffleOneBtn = document.getElementById("shuffleOneBtn");
+    const resetRandomBtn = document.getElementById("resetRandomBtn");
+
+    // Quiz UI
+    const quizProgress = document.getElementById("quizProgress");
+    const scoreChip = document.getElementById("scoreChip");
+    const quizInf = document.getElementById("quizInf");
+    const inImpS = document.getElementById("inImpS");
+    const inImpP = document.getElementById("inImpP");
+    const inPerf = document.getElementById("inPerf");
+    const inEn = document.getElementById("inEn");
+    const checkBtn = document.getElementById("checkBtn");
+    const showBtn = document.getElementById("showBtn");
+    const quizNextBtn = document.getElementById("quizNextBtn");
+    const quizResetBtn = document.getElementById("quizResetBtn");
+    const feedback = document.getElementById("feedback");
+    const quizNoRepeatToggle = document.getElementById("quizNoRepeatToggle");
+    const quizRandomMeta = document.getElementById("quizRandomMeta");
+
+    // List UI
+    const listCount = document.getElementById("listCount");
+    const listEl = document.getElementById("list");
+    const searchInput = document.getElementById("searchInput");
+    const clearSearchBtn = document.getElementById("clearSearchBtn");
+    const expandAllBtn = document.getElementById("expandAllBtn");
+
+    // =========================
+    // View switching
+    // =========================
+    function showView(which){
+      tabStudy.classList.toggle("active", which==="study");
+      tabQuiz.classList.toggle("active", which==="quiz");
+      tabList.classList.toggle("active", which==="list");
+      tabStudy.setAttribute("aria-selected", which==="study" ? "true":"false");
+      tabQuiz.setAttribute("aria-selected", which==="quiz" ? "true":"false");
+      tabList.setAttribute("aria-selected", which==="list" ? "true":"false");
+
+      viewStudy.classList.toggle("hidden", which!=="study");
+      viewQuiz.classList.toggle("hidden", which!=="quiz");
+      viewList.classList.toggle("hidden", which!=="list");
+
+      // mobile nicety: focus first input in quiz
+      if (which==="quiz") setTimeout(()=>inImpS.focus(), 50);
+    }
+
+    tabStudy.addEventListener("click", ()=>showView("study"));
+    tabQuiz.addEventListener("click", ()=>showView("quiz"));
+    tabList.addEventListener("click", ()=>showView("list"));
+
+    // =========================
+    // Study mode (order/random)
+    // =========================
+    let isRandom = false;
+
+    function setRandomMode(on){
+      isRandom = on;
+      modeOrder.classList.toggle("active", !on);
+      modeRandom.classList.toggle("active", on);
+      randomMeta.textContent = on ? "Random: on" : "Random: off";
+      if (on && noRepeatToggle.checked && randPool.length===0){
+        randPool = rebuildPool(VERBS.length);
+      }
+    }
+
+    modeOrder.addEventListener("click", ()=>setRandomMode(false));
+    modeRandom.addEventListener("click", ()=>setRandomMode(true));
+
+    revealToggle.addEventListener("change", ()=>{
+      formsBox.classList.toggle("hidden", !revealToggle.checked);
+    });
+
+    function renderStudy(){
+      const v = VERBS[idx];
+      studyInf.textContent = v?.inf ?? "—";
+      studyEn.textContent = v?.en ?? "—";
+      studyImpS.textContent = v?.impS ?? "—";
+      studyImpP.textContent = v?.impP ?? "—";
+      studyPerf.textContent = v?.perf ?? "—";
+      progressChip.textContent = `${idx+1} / ${VERBS.length}`;
+    }
+
+    function nextStudy(){
+      if (!VERBS.length) return;
+
+      if (isRandom){
+        if (noRepeatToggle.checked){
+          if (randPool.length===0) randPool = rebuildPool(VERBS.length);
+          idx = pickFromPool(randPool);
+        } else {
+          idx = Math.floor(Math.random()*VERBS.length);
+        }
+      } else {
+        idx = (idx + 1) % VERBS.length;
+      }
+      renderStudy();
+    }
+
+    function prevStudy(){
+      if (!VERBS.length) return;
+      if (isRandom){
+        // random "previous" is ambiguous; in random mode we just pick another.
+        nextStudy();
+      } else {
+        idx = (idx - 1 + VERBS.length) % VERBS.length;
+        renderStudy();
+      }
+    }
+
+    prevBtn.addEventListener("click", prevStudy);
+    nextBtn.addEventListener("click", nextStudy);
+    shuffleOneBtn.addEventListener("click", ()=>{
+      if (!VERBS.length) return;
+      idx = Math.floor(Math.random()*VERBS.length);
+      renderStudy();
+    });
+    resetRandomBtn.addEventListener("click", ()=>{
+      randPool = rebuildPool(VERBS.length);
+      renderStudy();
+    });
+
+    // =========================
+    // Quiz (fills: impS, impP, perf, en)
+    // =========================
+    function renderScore(){
+      scoreChip.textContent = `Score: ${scoreOK}✅ / ${scoreNO}❌`;
+    }
+
+    function ensureQuizPool(){
+      if (!VERBS.length) return;
+      if (quizNoRepeatToggle.checked){
+        if (quizPool.length===0) quizPool = rebuildPool(VERBS.length);
+      }
+    }
+
+    function pickQuizIndex(){
+      if (!VERBS.length) return 0;
+      if (isRandom){
+        if (quizNoRepeatToggle.checked){
+          ensureQuizPool();
+          return pickFromPool(quizPool);
+        }
+        return Math.floor(Math.random()*VERBS.length);
+      }
+      // ordered: mirror study order
+      return quizIdx;
+    }
+
+    function setQuizVerb(i){
+      quizIdx = i;
+      const v = VERBS[quizIdx];
+      quizInf.textContent = v?.inf ?? "—";
+      quizProgress.textContent = `Quiz • ${quizIdx+1} / ${VERBS.length}`;
+      feedback.classList.add("hidden");
+      feedback.classList.remove("ok","no");
+      feedback.textContent = "";
+
+      inImpS.value = "";
+      inImpP.value = "";
+      inPerf.value = "";
+      inEn.value = "";
+      setTimeout(()=>inImpS.focus(), 50);
+
+      quizRandomMeta.textContent = isRandom ? "Random: on" : "Random: off";
+    }
+
+    function nextQuiz(){
+      if (!VERBS.length) return;
+
+      if (isRandom){
+        const i = pickQuizIndex();
+        setQuizVerb(i);
+      } else {
+        quizIdx = (quizIdx + 1) % VERBS.length;
+        setQuizVerb(quizIdx);
+      }
+    }
+
+    function checkQuiz(){
+      const v = VERBS[quizIdx];
+      if (!v) return;
+
+      const okImpS = checkField(inImpS.value, v.impS);
+      const okImpP = checkField(inImpP.value, v.impP);
+      const okPerf = checkField(inPerf.value, v.perf);
+      const okEn   = checkField(inEn.value, v.en, {english:true});
+
+      const allOK = okImpS && okImpP && okPerf && okEn;
+
+      feedback.classList.remove("hidden","ok","no");
+      feedback.classList.add(allOK ? "ok":"no");
+
+      const lines = [];
+      lines.push(allOK ? "✅ Correct!" : "❌ Not quite.");
+      lines.push("");
+      lines.push(`imperfectum enkelvoud: ${okImpS ? "✅" : "❌"}  (correct: ${v.impS})`);
+      lines.push(`imperfectum meervoud:  ${okImpP ? "✅" : "❌"}  (correct: ${v.impP})`);
+      lines.push(`perfectum:             ${okPerf ? "✅" : "❌"}  (correct: ${v.perf})`);
+      lines.push(`engels:                ${okEn   ? "✅" : "❌"}  (correct: ${v.en})`);
+      feedback.textContent = lines.join("\n");
+
+      if (allOK) scoreOK++; else scoreNO++;
+      renderScore();
+    }
+
+    function showQuizAnswers(){
+      const v = VERBS[quizIdx];
+      if (!v) return;
+      feedback.classList.remove("hidden","ok","no");
+      feedback.classList.add("ok");
+      feedback.textContent =
+        `Answers:\n` +
+        `imperfectum enkelvoud: ${v.impS}\n` +
+        `imperfectum meervoud:  ${v.impP}\n` +
+        `perfectum:             ${v.perf}\n` +
+        `engels:                ${v.en}`;
+    }
+
+    checkBtn.addEventListener("click", checkQuiz);
+    showBtn.addEventListener("click", showQuizAnswers);
+    quizNextBtn.addEventListener("click", nextQuiz);
+    quizResetBtn.addEventListener("click", ()=>{
+      scoreOK = 0; scoreNO = 0;
+      renderScore();
+      feedback.classList.add("hidden");
+    });
+
+    // Enter to check, Shift+Enter to next (mobile keyboards often have Enter)
+    [inImpS, inImpP, inPerf, inEn].forEach(inp=>{
+      inp.addEventListener("keydown", (e)=>{
+        if (e.key === "Enter"){
+          e.preventDefault();
+          if (e.shiftKey) nextQuiz();
+          else checkQuiz();
+        }
+      });
+    });
+
+    // Keep quiz random meta in sync
+    function syncQuizMeta(){
+      quizRandomMeta.textContent = isRandom ? "Random: on" : "Random: off";
+    }
+    quizNoRepeatToggle.addEventListener("change", ()=>{
+      quizPool = rebuildPool(VERBS.length);
+    });
+
+    // =========================
+    // Full list
+    // =========================
+    function renderList(filter=""){
+      const q = norm(filter);
+      listEl.innerHTML = "";
+
+      const matches = (v)=>{
+        if (!q) return true;
+        const hay = norm([v.inf, v.impS, v.impP, v.perf, v.en].join(" | "));
+        return hay.includes(q);
+      };
+
+      const filtered = VERBS.filter(matches);
+      listCount.textContent = `${filtered.length} verbs`;
+
+      for (const v of filtered){
+        const d = document.createElement("details");
+        const s = document.createElement("summary");
+
+        const left = document.createElement("div");
+        left.className = "sumleft";
+
+        const t = document.createElement("div");
+        t.className = "sumtitle";
+        t.textContent = v.inf;
+
+        const sub = document.createElement("div");
+        sub.className = "sumsub";
+        sub.textContent = v.en;
+
+        left.appendChild(t);
+        left.appendChild(sub);
+
+        const caret = document.createElement("div");
+        caret.className = "caret";
+        caret.textContent = "›";
+
+        s.appendChild(left);
+        s.appendChild(caret);
+
+        const body = document.createElement("div");
+        body.className = "detailBody";
+        body.innerHTML = `
+          <div class="forms" style="border-top:0;padding-top:0;margin-top:0">
+            <div class="kv"><div class="k">imperfectum enkelvoud</div><div class="v">${escapeHTML(v.impS)}</div></div>
+            <div class="kv"><div class="k">imperfectum meervoud</div><div class="v">${escapeHTML(v.impP)}</div></div>
+            <div class="kv"><div class="k">perfectum</div><div class="v">${escapeHTML(v.perf)}</div></div>
+          </div>
+        `;
+
+        d.appendChild(s);
+        d.appendChild(body);
+        listEl.appendChild(d);
+
+        d.addEventListener("toggle", ()=>{
+          caret.textContent = d.open ? "⌄" : "›";
+        });
+      }
+    }
+
+    function escapeHTML(str){
+      return (str ?? "").toString()
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    searchInput.addEventListener("input", ()=>renderList(searchInput.value));
+    clearSearchBtn.addEventListener("click", ()=>{
+      searchInput.value = "";
+      renderList("");
+      searchInput.focus();
+    });
+
+    let expanded = false;
+    expandAllBtn.addEventListener("click", ()=>{
+      const all = listEl.querySelectorAll("details");
+      expanded = !expanded;
+      all.forEach(d => d.open = expanded);
+      expandAllBtn.textContent = expanded ? "Collapse all" : "Expand all";
+    });
+
+    // =========================
+    // Keyboard shortcuts (desktop)
+    // =========================
+    document.addEventListener("keydown", (e)=>{
+      if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+
+      if (!viewStudy.classList.contains("hidden")){
+        if (e.key === "ArrowRight") nextStudy();
+        if (e.key === "ArrowLeft") prevStudy();
+        if (e.key === " ") { e.preventDefault(); revealToggle.checked = !revealToggle.checked; formsBox.classList.toggle("hidden", !revealToggle.checked); }
+      }
+    });
+
+    // =========================
+    // Load CSV and start
+    // =========================
+    async function load(){
+      try{
+        loadHint.textContent = `Fetching: ${CSV_PATH}`;
+        const res = await fetch(CSV_PATH, {cache:"no-store"});
+        if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        const text = await res.text();
+        VERBS = parseCSV(text);
+
+        if (!VERBS.length) throw new Error("No verbs found in CSV.");
+
+        // Init pools
+        randPool = rebuildPool(VERBS.length);
+        quizPool = rebuildPool(VERBS.length);
+
+        // Render initial
+        idx = 0;
+        renderStudy();
+
+        scoreOK = 0; scoreNO = 0;
+        renderScore();
+        setQuizVerb(0);
+
+        renderList("");
+
+        // Show main UI
+        loadingCard.classList.add("hidden");
+        viewStudy.classList.remove("hidden");
+
+        // Default random off
+        setRandomMode(false);
+        syncQuizMeta();
+
+      } catch (err){
+        loadingCard.innerHTML = `
+          <div style="font-weight:800;font-size:16px;margin-bottom:8px;">Couldn’t load verbs.csv</div>
+          <div class="small" style="white-space:pre-wrap;line-height:1.5;">
+Make sure:
+- verbs.csv is in the same folder as index.html (or update CSV_PATH)
+- GitHub Pages is enabled for the repo
+- Your CSV header is exactly:
+  infinitief,imperfectum_enkelvoud,imperfectum_meervoud,perfectum,engels
+
+Error: ${escapeHTML(err.message)}
+          </div>
+        `;
+        console.error(err);
+      }
+    }
+
+    // Keep quiz random mode synced to top toggle
+    function mirrorRandomToQuiz(){
+      quizRandomMeta.textContent = isRandom ? "Random: on" : "Random: off";
+      if (isRandom && quizNoRepeatToggle.checked && quizPool.length===0){
+        quizPool = rebuildPool(VERBS.length);
+      }
+    }
+    // When changing random mode, reset pools gently
+    function afterRandomChange(){
+      mirrorRandomToQuiz();
+    }
+    // Hook into existing random toggle
+    const _setRandomMode = setRandomMode;
+    setRandomMode = function(on){
+      _setRandomMode(on);
+      afterRandomChange();
+    }
+
+    load();
+  </script>
+</body>
+</html>
+
